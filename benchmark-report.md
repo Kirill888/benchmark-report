@@ -190,7 +190,7 @@ For `stackstac`, building mosaics is significantly more expensive computationall
 
 Loading data at significantly reduced resolutions is a common scenario. And is especially useful in the exploratory stages of the data analysis, which tend to be interactive and thus benefit from faster load times.
 
-The cloud-optimized imagery includes low-resolution overviews, and therefor can be read much faster at lower resolutions. For every doubling of the output pixel size in ground units, one needs to load four times fewer input pixels for the same geographic area.
+The cloud-optimized imagery includes low-resolution overviews, and therefore can be read much faster at lower resolutions. For every doubling of the output pixel size in ground units, one needs to load four times fewer input pixels for the same geographic area.
 
 ```python
 _dd = dd.loc[dd.scenario == "wide"].loc[dd.chunk == 2048]
@@ -215,7 +215,7 @@ _dd.round(1)
 
 For `odc-stac`, reading imagery at 20m pixels is 4 times faster than reading at the native 10m. Throughput per output pixel remains the same but there are four times fewer pixels to read. At the higher zoom out scales throughput starts to drop off, but load times are still getting quite a bit faster the further you zoom out.
 
-For `stackstac`, lower resolution reads do result in faster competion time, but throughput per output pixel drops off much quicker than for `odc-stac`.
+For `stackstac`, lower resolution reads do result in faster completion time, but throughput per output pixel drops off much quicker than for `odc-stac`.
 
 When zooming out to 1/8 image side size (1/64 in the number of pixels), `odc-stac` is more than 10 times quicker than `stackstac` (2.3 vs 29.3 seconds).
 
