@@ -52,9 +52,9 @@ We load three bands (red, green and blue) in the native projection and resolutio
      ```
    - [STAC Features Wide](data/s2-ms-mosaic_2020-06-06--P1D.geojson)
 
-To control for variability in data access performance, we run each benchmark several times and pick the fastest run for comparison. Most configurations were processed five times, with some slower ones being repeated three times. We have observed low variability of execution times for the slower ones.
+To control for variability in data access performance, we ran each benchmark several times and picked the fastest run for comparison. Most configurations were processed five times, with some slower ones repeated three times. We observed low variability of execution times for the slower runs.
 
-A rotated thumbnail of the **wide** area scenario is displayed below, the image is actually tall and narrow - to save space we display it rotated counter clockwise.
+A rotated thumbnail of the **wide** area scenario is displayed below; the image is actually tall and narrow, but to save space we display it rotated counter clockwise.
 
 !["wide" scenario rotated 90 degrees](images/thumb-2020-06-06_rotated.jpg)
 
@@ -97,12 +97,12 @@ _dd.elapsed.plot.barh(title="Total Time (seconds)", xlabel="Chunk Size", ax=ax[0
 _dd.throughput_mps.plot.barh(title="Throughput (Mpix/s)", xlabel="", ax=ax[1], legend="reverse");
 ```
 
-Both libraries use [GDAL](https://gdal.org/) via [rasterio](https://rasterio.readthedocs.io/en/latest/) to read the data, but `stackstac` configures GDAL internal caching to optimize the re-use of the image metadata. This has significant positive impact on performance. Essentially, caching is   only enabled when reading the image headers, so they don't get ejected by the compressed pixel data, because the compressed data is read without caching. This is especially helpful when using multiple threads in Dask workers.
+Both libraries use [GDAL](https://gdal.org/) via [rasterio](https://rasterio.readthedocs.io/en/latest/) to read the data, but `stackstac` configures GDAL internal caching to optimize the re-use of the image metadata. This has significant positive impact on performance. Essentially, caching is only enabled when reading the image headers, so they don't get ejected by the compressed pixel data, because the compressed data is read without caching. This is especially helpful when using multiple threads in Dask workers.
 
 
 ## Wide Scenario Results
 
-When loading a large mosaic however,`odc-stac` has a significant advantage over `stackstac`. For `odc-stac` optimal chunk size remains the same as for the **deep** scenario: 2048 pixels. For `stackstac`, performance slowly improves with the larger chunk sizes. The best performance for `stackstac` was achieved using the largest chunk size we tried: 7168 pixels. Throughput achieved by `odc-stac` is almost 2.5 times higher than `stackstac`: 74.7 vs 30.1 Mpix/s.
+When loading a large mosaic, `odc-stac` has a significant advantage over `stackstac`. For `odc-stac` optimal chunk size remains the same as for the **deep** scenario: 2048 pixels. For `stackstac`, performance slowly improves with the larger chunk sizes. The best performance for `stackstac` was achieved using the largest chunk size we tried: 7168 pixels. Throughput achieved by `odc-stac` is almost 2.5 times higher than `stackstac`: 74.7 vs 30.1 Mpix/s.
 
 ```python
 _dd = (
@@ -131,14 +131,14 @@ This means that the computational complexity of the **wide** scenario grows with
 
 This approach to data loading results in a very large Dask graph with a large number of "no-op" chunks. While `stackstac` includes optimizations for chunks that are "empty", those still need to be processed by the Dask scheduler, resulting in a significant processing overhead.
 
-Approach taken by `odc-stac` avoids this problem:
+The approach taken by `odc-stac` avoids this problem:
 
-1. For each output Dask chunk, figure out what data overlaps with this chunk  at the Dask graph construction time
+1. For each output Dask chunk, figure out what data overlaps with this chunk at the Dask graph construction time
 2. For chunks that have no data, generate an "empty" task (returns array filled with `nodata` values)
 3. For chunks that have only one data source, generate a "simple load" task
-4. For chunks with multiple data sources, generate a "fused load" task, i.e. load data from multiple sources and, for each output pixel, pick one valid observation in the deterministic fashion (first observed non-empty pixel is used for the output).
+4. For chunks with multiple data sources, generate a "fused load" task, i.e. load data from multiple sources and, for each output pixel, pick one valid observation in the deterministic fashion (first observed non-empty pixel is used for the output)
 
-As a result, Dask graph produced by `odc-stac` is much smaller than the graph produced by `stackstac` in this scenario. Which results in a much faster submission and processing by the Dask scheduler. The table below lists the *Submit* time in seconds, as observed for the fastest run across the chunk sizes.
+As a result, Dask graph produced by `odc-stac` is much smaller than the graph produced by `stackstac` in this scenario, which results in a much faster submission and processing by the Dask scheduler. The table below lists the *Submit* time in seconds, as observed for the fastest run across the chunk sizes.
 
 
 ```python
@@ -188,7 +188,7 @@ For `stackstac`, building mosaics is significantly more expensive computationall
 
 ## Generating Overview Image
 
-Loading data at significantly reduced resolutions is a common scenario. And is especially useful in the exploratory stages of the data analysis, which tend to be interactive and thus benefit from faster load times.
+Loading data at significantly reduced resolutions is a common scenario, and is especially useful in the exploratory stages of the data analysis, which tend to be interactive and thus benefit from faster load times.
 
 The cloud-optimized imagery includes low-resolution overviews, and therefore can be read much faster at lower resolutions. For every doubling of the output pixel size in ground units, one needs to load four times fewer input pixels for the same geographic area.
 
@@ -213,7 +213,7 @@ _dd.throughput_mps.plot.barh(ax=ax[1], xlabel="", legend="reverse");
 _dd.round(1)
 ```
 
-For `odc-stac`, reading imagery at 20m pixels is 4 times faster than reading at the native 10m. Throughput per output pixel remains the same but there are four times fewer pixels to read. At the higher zoom out scales throughput starts to drop off, but load times are still getting quite a bit faster the further you zoom out.
+For `odc-stac`, reading imagery at 20m pixels is 4 times faster than reading at the native 10m. Throughput per output pixel remains the same but there are four times fewer pixels to read. At the higher zoom out scales throughput starts to drop off, but load times are still quite a bit faster the further you zoom out.
 
 For `stackstac`, lower resolution reads do result in faster completion time, but throughput per output pixel drops off much quicker than for `odc-stac`.
 
