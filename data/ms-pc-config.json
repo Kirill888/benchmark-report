@@ -1,0 +1,14 @@
+{
+  "bands": ["B02", "B03", "B04"],
+  "patch_url": "planetary_computer.sas.sign",
+  "extra": {
+    "stackstac": {
+      "dtype": "uint16",
+      "fill_value": 0
+    },
+    "odc-stac": {
+      "groupby": "solar_day",
+      "stac_cfg": {"*": {"warnings": "ignore"}}
+    }
+  }
+}
