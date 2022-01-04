@@ -1,0 +1,7 @@
+.ipynb_checkpoints/
+_export/*
+*.pyc
+/benchmark-report.ipynb
+/benchmark-report.html
+/benchmark-report.py
+/rendered.ipynb
