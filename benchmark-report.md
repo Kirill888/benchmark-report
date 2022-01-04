@@ -19,7 +19,7 @@ In this report we compare the performance of `odc-stac` ([GitHub](https://github
 
 ## Experiment Setup
 
-Experiment was conducted in the [Planetary Computer](https://planetarycomputer.microsoft.com/) Pangeo Notebook environment, using a single-node Dask cluster with 4 cores and 32 GiB RAM.
+Experiment was conducted in the [Planetary Computer](https://planetarycomputer.microsoft.com/) Pangeo Notebook environment, using a single-node Dask cluster with 4 cores and 32 GiB RAM per-worker.
 
 We load three bands (red, green and blue) in the native projection and resolution of the data (10m, UTM). We consider two scenarios: **deep** (temporal processing) and **wide** (building mosaic for visualisation).
 
